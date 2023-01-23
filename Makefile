@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: ISC
 #
-# Copyright (C) 2020 Dave Voutila <dave@sisu.io>. All rights reserved.
+# Copyright (C) 2023 Dave Voutila <voutilad@gmail.com>. All rights reserved.
 
 KERNELRELEASE ?= $(shell uname -r)
 KERNELDIR ?= /lib/modules/$(KERNELRELEASE)/build
