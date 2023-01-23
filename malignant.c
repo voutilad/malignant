@@ -55,15 +55,16 @@ static int get_com1(char *buffer, const struct kernel_param *kp)
 
 static int set_com1(const char *val, const struct kernel_param *kp)
 {
-	char c = val[0];
+	char c;
+	size_t i, sz = strlen(val);
 
-	printk(KERN_INFO "writing bytes to com1 using %s", REX_OUTB);
-	while (c != '\0') {
+	printk(KERN_INFO "writing %zu bytes to com1 using %s", sz, REX_OUTB);
+	for (i = 0; i < sz; i++) {
+		c = val[i];
 		__asm volatile(".byte " REX_OUTB :: "a" (c), "d" (0x3f8));
-		c = val++;
 	}
 
-	return 0;
+	return sz + 1;
 }
 
 static const struct kernel_param_ops com1_param_ops = {
