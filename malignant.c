@@ -36,20 +36,31 @@ static void __exit malignant_exit(void)
 	printk(KERN_INFO "%s\n", __func__);
 }
 
+#define REX_INB		"0x40,0x40,0x40,0xec"
+#define REX_OUTB	"0x40,0x40,0x40,0xee"
 static int com1 = 0;
 
 static int get_com1(char *buffer, const struct kernel_param *kp)
 {
-	*buffer = '\0';
-	return 1;
+	char al = '\0';
+
+	printk(KERN_INFO "reading a byte from com1 using %s", REX_INB);
+
+	__asm volatile(".byte " REX_INB : "=a" (al) : "d" (0x3f8));
+
+	buffer[0] = al;
+	buffer[1] = '\0';
+	return 2;
 }
 
 static int set_com1(const char *val, const struct kernel_param *kp)
 {
-	if (strcmp(val, "bad\n") == 0) {
-		printk(KERN_INFO "got bad!\n");
-	} else {
-		printk(KERN_INFO "not bad.\n");
+	char c = val[0];
+
+	printk(KERN_INFO "writing bytes to com1 using %s", REX_OUTB);
+	while (c != '\0') {
+		__asm volatile(".byte " REX_OUTB :: "a" (c), "d" (0x3f8));
+		c = val++;
 	}
 
 	return 0;
